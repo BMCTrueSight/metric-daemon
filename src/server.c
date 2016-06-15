@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,19 +26,30 @@
 
 #define MAXBUF 1024*1024
 
-const char *m_count = "COUNT";
-const char *m_status = "STATUS";
+const char *m_bytecount = "BYTECOUNT";
+const char *m_duration = "DURATION";
+const char *m_number = "NUMBER";
+const char *m_percent = "PERCENT";
 
-double process_request(const char *request) {
-    double value = 0;
-    if (strcmp(request, m_count) == 0) {
-        value = 1.0;
-    } else if (strcmp(request, m_status) == 0) {
-        value = 2.0;
+double rand_range(int min, int max) {
+    double rnum =rand()/(double)RAND_MAX;
+    return floor(rnum * ((max - min) + 1)) + min;
+}
+
+int process_request(const char *request, double *value) {
+    int result = 1;
+    if (strcmp(request, m_bytecount) == 0) {
+        *value = rand_range(123, 123456);
+    } else if (strcmp(request, m_duration) == 0) {
+        *value = rand_range(0, 10000);
+    } else if (strcmp(request, m_number) == 0) {
+        *value = rand_range(0, 100);
+    } else if (strcmp(request, m_percent) == 0) {
+        *value = rand_range(0,1)/100.0;
     } else {
-        value = -1.0;
+        result = 0;
     }
-    return value;
+    return result;
 }
 
 void serve_measurements(int sd) {
@@ -60,12 +72,18 @@ void serve_measurements(int sd) {
             strncpy(request, bufin, n);
             request[n - 1] = '\0';
 
-            double measurement = process_request(request);
-            // Output the address of sender and their metric request
-            fprintf(stderr, "from: %s port: %d, request: %s, response: %f\n",
-                    inet_ntoa(remote.sin_addr), ntohs(remote.sin_port),
-		    request, measurement);
-            n = sprintf(bufin, "%f", measurement);
+            double measurement = 0;
+	    int n = 0;
+		    
+            if (process_request(request, &measurement)) {
+                // Output the address of sender and their metric request
+                fprintf(stderr, "from: %s port: %d, request: %s, response: %.3f\n",
+                        inet_ntoa(remote.sin_addr), ntohs(remote.sin_port),
+	                request, measurement);
+                n = sprintf(bufin, "%.3f", measurement);
+	    } else {
+            	n = sprintf(bufin, "%s", "UNKNOWN_METRIC");
+	    }
             /* Got something, just send it back */
             sendto(sd, bufin, n, 0, (struct sockaddr *) &remote, len);
         }

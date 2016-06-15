@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(metricd)
-set(SOURCE_FILES src/main.c)
+set(SERVER_SOURCE_FILES src/server.c )
+add_executable(metricd ${SOURCE_FILES})
+set(CLIENT_SOURCE_FILES src/client.c )
 add_executable(metricd ${SOURCE_FILES})

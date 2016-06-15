@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 #include <math.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,7 +46,7 @@ int process_request(const char *request, double *value) {
     } else if (strcmp(request, m_number) == 0) {
         *value = rand_range(0, 100);
     } else if (strcmp(request, m_percent) == 0) {
-        *value = rand_range(0,1)/100.0;
+        *value = rand_range(0,100)/100.0;
     } else {
         result = 0;
     }
@@ -99,6 +100,8 @@ int main(int argc, char *argv[]) {
     if (argc == 2) {
         port = atoi(argv[2]);
     }
+
+    srand(time(NULL));
 
     // create a socket
     // IP protocol family (PF_INET)

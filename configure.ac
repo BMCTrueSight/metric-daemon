@@ -1,5 +1,5 @@
 AC_PREREQ([2.64])
-AC_INIT([metric-daemon], [1.0])
+AC_INIT([metric-daemon], [0.1])
 AM_INIT_AUTOMAKE([ -Wall -Werror subdir-objects])
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADERS([config.h])

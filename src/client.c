@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+#include <ctype.h>
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +26,8 @@
 
 #define BUFSIZE 1024
 
+char program_name[BUFSIZE];
+
 /* 
  * error - wrapper for perror
  */
@@ -32,6 +35,40 @@ void error(char *msg) {
     perror(msg);
     exit(0);
 }
+
+void usage() {
+    fprintf(stderr, "usage: %s <hostname> <port> <bytecount|duration|number|percent>\n",
+            basename(program_name));
+    exit(0);
+}
+
+char *upper(char *s) {
+    for (int i = 0; s[i]; i++) {
+        s[i] = toupper(s[i]);
+    }
+    return s;
+}
+
+static const char *requests[] = {
+        "bytecount",
+        "duration",
+        "number",
+        "percent",
+        NULL
+};
+
+int validate_request(const char *request) {
+    int result = 1;
+
+    for (int i = 0; requests[i]; i++) {
+        if (strcmp(requests[i], request) == 0) {
+            result = 0;
+            break;
+        }
+    }
+    return result;
+}
+
 
 int main(int argc, char **argv) {
     int sockfd, portno, n;
@@ -42,13 +79,25 @@ int main(int argc, char **argv) {
     char request[BUFSIZE];
     char response[BUFSIZE];
 
-    /* check command line arguments */
-    if (argc > 4) {
-        fprintf(stderr, "usage: %s <hostname> <port> [request]\n", basename(argv[0]));
-        exit(0);
+    // Set our request/response buffers to empty values
+    memset(request, '\0', BUFSIZE);
+    memset(response, '\0', BUFSIZE);
+
+    strcpy(program_name, argv[0]);
+
+    // check command line arguments
+    if (argc < 4) {
+        usage();
     }
+
     hostname = argv[1];
     portno = atoi(argv[2]);
+    if (validate_request(argv[3])) {
+        usage();
+    }
+    else {
+        memcpy(request, upper(argv[3]), strlen(argv[3]));
+    }
 
     /* socket: create the socket */
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -68,24 +117,9 @@ int main(int argc, char **argv) {
     memcpy(server->h_addr, &serveraddr.sin_addr.s_addr, server->h_length);
     serveraddr.sin_port = htons(portno);
 
-    // Set our request/response buffers to empty values
-    memset(request, '\0', BUFSIZE);
-    memset(response, '\0', BUFSIZE);
-
-    // Use the passed in request, or if not specified prompt the user for a request
-    if (argc == 4) {
-        memcpy(request, argv[3], strlen(argv[3]));
-    }
-    else {
-        printf("Please enter request: ");
-        char *s = fgets(request, BUFSIZE, stdin);
-	// Remove the new line character
-	request[strlen(request) - 1] = '\0';
-    }
-
     /* send the message to the server */
     serverlen = sizeof(serveraddr);
-    n = sendto(sockfd, request, strlen(request)+1, 0, (struct sockaddr *) &serveraddr, serverlen);
+    n = sendto(sockfd, request, strlen(request) + 1, 0, (struct sockaddr *) &serveraddr, serverlen);
     if (n < 0) {
         error("ERROR in sendto");
     }

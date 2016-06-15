@@ -60,13 +60,12 @@ void serve_measurements(int sd) {
             strncpy(request, bufin, n);
             request[n - 1] = '\0';
 
-            // Output the address of sender and their metric request
-            fprintf(stderr, "Request for metric %s from %s port %d\n", request,
-                    inet_ntoa(remote.sin_addr), ntohs(remote.sin_port));
-
             double measurement = process_request(request);
+            // Output the address of sender and their metric request
+            fprintf(stderr, "from: %s port: %d, request: %s, response: %f\n",
+                    inet_ntoa(remote.sin_addr), ntohs(remote.sin_port),
+		    request, measurement);
             n = sprintf(bufin, "%f", measurement);
-            fprintf(stderr, "%s\n", bufin);
             /* Got something, just send it back */
             sendto(sd, bufin, n, 0, (struct sockaddr *) &remote, len);
         }
@@ -77,6 +76,11 @@ int main(int argc, char *argv[]) {
     int ld;
     struct sockaddr_in skaddr;
     socklen_t length;
+    int port = 12345;
+
+    if (argc == 2) {
+        port = atoi(argv[2]);
+    }
 
     // create a socket
     // IP protocol family (PF_INET)
@@ -92,7 +96,7 @@ int main(int argc, char *argv[]) {
     // the port number is assigned by the kernel
     skaddr.sin_family = AF_INET;
     skaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    skaddr.sin_port = htons(0);
+    skaddr.sin_port = htons(port);
 
     if (bind(ld, (struct sockaddr *) &skaddr, sizeof(skaddr)) < 0) {
         fprintf(stderr, "Problem binding\n");

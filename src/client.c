@@ -78,7 +78,9 @@ int main(int argc, char **argv) {
     }
     else {
         printf("Please enter request: ");
-        fgets(request, BUFSIZE, stdin);
+        char *s = fgets(request, BUFSIZE, stdin);
+	// Remove the new line character
+	request[strlen(request) - 1] = '\0';
     }
 
     /* send the message to the server */

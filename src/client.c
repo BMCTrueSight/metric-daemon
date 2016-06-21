@@ -119,17 +119,17 @@ int main(int argc, char **argv) {
 
     /* send the message to the server */
     serverlen = sizeof(serveraddr);
-    n = sendto(sockfd, request, strlen(request) + 1, 0, (struct sockaddr *) &serveraddr, serverlen);
+    n = sendto(sockfd, request, strlen(request), 0, (struct sockaddr *) &serveraddr, serverlen);
     if (n < 0) {
         error("ERROR in sendto");
     }
 
-    /* print the server's reply */
+    // Extract the servers response
     n = recvfrom(sockfd, response, BUFSIZE, 0, (struct sockaddr *) &serveraddr, &serverlen);
     if (n < 0) {
         error("ERROR in recvfrom");
     }
-    fprintf(stdout, "request: %s, response: %s\n", request, response);
+    fprintf(stdout, "request: \"%s\", response: %s\n", request, response);
     fflush(stdout);
     return 0;
 }

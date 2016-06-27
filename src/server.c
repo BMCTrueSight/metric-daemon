@@ -33,7 +33,7 @@ const char *m_number = "NUMBER";
 const char *m_percent = "PERCENT";
 
 double rand_range(int min, int max) {
-    double rnum =rand()/(double)RAND_MAX;
+    double rnum = rand() / (double) RAND_MAX;
     return floor(rnum * ((max - min) + 1)) + min;
 }
 
@@ -46,7 +46,7 @@ int process_request(const char *request, double *value) {
     } else if (strcmp(request, m_number) == 0) {
         *value = rand_range(0, 100);
     } else if (strcmp(request, m_percent) == 0) {
-        *value = rand_range(0,100)/100.0;
+        *value = rand_range(0, 100) / 100.0;
     } else {
         result = 0;
     }
@@ -71,20 +71,21 @@ void serve_measurements(int sd) {
             perror("Error receiving data");
         } else {
             strncpy(request, bufin, n);
-            request[n - 1] = '\0';
+            request[n] = '\0';
+            fprintf(stderr, "request: \"%s\" ", request);
 
             double measurement = 0;
-	    int n = 0;
-		    
+            int n = 0;
+
             if (process_request(request, &measurement)) {
                 // Output the address of sender and their metric request
                 fprintf(stderr, "from: %s port: %d, request: %s, response: %.3f\n",
                         inet_ntoa(remote.sin_addr), ntohs(remote.sin_port),
-	                request, measurement);
+                        request, measurement);
                 n = sprintf(bufin, "%.3f", measurement);
-	    } else {
-            	n = sprintf(bufin, "%s", "UNKNOWN_METRIC");
-	    }
+            } else {
+                n = sprintf(bufin, "%s", "UNKNOWN_METRIC");
+            }
             /* Got something, just send it back */
             sendto(sd, bufin, n, 0, (struct sockaddr *) &remote, len);
         }
@@ -95,7 +96,7 @@ int main(int argc, char *argv[]) {
     int ld;
     struct sockaddr_in skaddr;
     socklen_t length;
-    int port = 12345;
+    in_port_t port = 12345;
 
     if (argc == 2) {
         port = atoi(argv[2]);

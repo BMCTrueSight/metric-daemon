@@ -99,25 +99,25 @@ int main(int argc, char **argv) {
         memcpy(request, upper(argv[3]), strlen(argv[3]));
     }
 
-    /* socket: create the socket */
+    // socket: create the socket
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0)
         error("ERROR opening socket");
 
-    /* gethostbyname: get the server's DNS entry */
+    // Get the server's DNS entry
     server = gethostbyname(hostname);
     if (server == NULL) {
         fprintf(stderr, "ERROR, no such host as %s\n", hostname);
         exit(0);
     }
 
-    /* build the server's Internet address */
+    // build the server's Internet address
     memset(&serveraddr, '\0', sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     memcpy(server->h_addr, &serveraddr.sin_addr.s_addr, server->h_length);
     serveraddr.sin_port = htons(portno);
 
-    /* send the message to the server */
+    // send the message to the server
     serverlen = sizeof(serveraddr);
     n = sendto(sockfd, request, strlen(request), 0, (struct sockaddr *) &serveraddr, serverlen);
     if (n < 0) {

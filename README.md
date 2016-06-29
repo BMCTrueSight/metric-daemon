@@ -1,6 +1,6 @@
 # Metric Daemon
 
-Daemon the generates example metric values and makes them available via a UDP channel.
+Daemon the generates random metric values for each of the different unit types and makes them available via a UDP channel.
 
 ## Platforms
 

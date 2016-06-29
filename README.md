@@ -33,19 +33,19 @@ Should work on all POSIX platforms including windows using cygwin
 
 4. Configure:
 
-    ```
+    ```bash
     $ ./configure
     ```
 
 5. Compile the distribution
 
-    ```
+    ```bash
     $ make
     ```
 
 6. Install the binaries
 
-    ```
+    ```bash
     $ sudo make install
     ```
 
@@ -53,17 +53,17 @@ Should work on all POSIX platforms including windows using cygwin
 
 You can start the daemon in the foreground by running the following:
 
-    ```
+1. Start the daemon:
+    ```bash
     $ metricd
     The server UDP port number is 12345
     ```
 
-You can test that the daemon is working correctly by using the accompanying client command:
-
-    ```
-    $ metric-client 127.0.0.1 12345 bytecount
-    request: BYTECOUNT, response: 95514.000
-    ```
+2. Run the client:
+   ```bash
+   $ metric-client 127.0.0.1 12345 bytecount
+   request: BYTECOUNT, response: 95514.000
+   ```
 
 ## TODO
 

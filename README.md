@@ -14,26 +14,37 @@ Should work on all POSIX platforms including windows using cygwin
 ## Installation
 
 1. Download the current release:
+
     ```bash
-    wget https://github.com/BMCTrueSight/metric-daemon/archive/v0.0.1.tar.gz
+    wget https://github.com/BMCTrueSight/metric-daemon/releases/download/v0.2.0/metric-daemon-0.2.tar.gz
     ```
+
 2. Extract the contents:
+
     ```bash
-    tar xvf v0.0.1.tar.gz
+    tar xvf metric-daemon-0.2.tar.gz
+    ```
 
 3. Change directory to distribution
+
     ```bash
-    cd blah
+    cd metric-daemon-0.2
     ``` 
+
 4. Configure:
+
     ```
     $ ./configure
     ```
+
 5. Compile the distribution
+
     ```
     $ make
     ```
+
 6. Install the binaries
+
     ```
     $ sudo make install
     ```
